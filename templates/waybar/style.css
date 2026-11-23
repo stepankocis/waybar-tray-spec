@@ -1,0 +1,19 @@
+/* Merge into ~/.config/waybar/style.css. Only the custom module needs rules:
+   Waybar's tray module draws SNI items itself. */
+
+/* Every `class` the app prints needs a rule, error included. */
+#custom-app-name {
+    padding: 0 5px 0 25px;
+    background-image: url("app-name.svg");
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 16px 16px;
+    color: #ffffff;
+    background-color: #2e3440;
+    border-radius: 5px;
+}
+
+#custom-app-name.error {
+    color: #bf616a;
+    background-color: #2e3440;
+}

@@ -1,0 +1,10 @@
+/home/otep/.t3/projects/waybar-tray-spec/templates/target/debug/build/zbus_macros/f2bd6a806eb4c756/out/zbus_macros-f2bd6a806eb4c756.d: /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/lib.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/error.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/iface.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/proxy.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/utils.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/../README.md
+
+/home/otep/.t3/projects/waybar-tray-spec/templates/target/debug/build/zbus_macros/f2bd6a806eb4c756/out/libzbus_macros-f2bd6a806eb4c756.so: /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/lib.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/error.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/iface.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/proxy.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/utils.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/../README.md
+
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/lib.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/error.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/iface.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/proxy.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/utils.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-5.19.0/src/../README.md:

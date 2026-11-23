@@ -1,0 +1,11 @@
+/home/otep/.t3/projects/waybar-tray-spec/templates/target/debug/build/bitflags/b9e8bb0ed062e37b/out/bitflags-b9e8bb0ed062e37b.d: /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/lib.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/iter.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/parser.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/traits.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/public.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/internal.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/external.rs
+
+/home/otep/.t3/projects/waybar-tray-spec/templates/target/debug/build/bitflags/b9e8bb0ed062e37b/out/libbitflags-b9e8bb0ed062e37b.rmeta: /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/lib.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/iter.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/parser.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/traits.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/public.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/internal.rs /home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/external.rs
+
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/lib.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/iter.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/parser.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/traits.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/public.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/internal.rs:
+/home/otep/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.2/src/external.rs:

@@ -1,0 +1,31 @@
+// Merge into ~/.config/waybar/config.jsonc. Keep only the pattern the app
+// uses (SPEC.md, "Pattern decision table") and delete the rest.
+{
+    "modules-right": ["custom/app-name", "tray"],
+
+    // SNI tray item. Waybar's tray module shows it. The app itself starts from
+    // the compositor's autostart, not from Waybar.
+    "tray": { "icon-size": 20, "spacing": 8 },
+
+    // Waybar custom module, refresh shape L (SPEC.md, "Waybar contract"): one
+    // long-running process prints one JSON line per change. There is no
+    // "interval", so Waybar keeps reading lines while the process runs.
+    "custom/app-name": {
+        "exec": "app-name --waybar",
+        "return-type": "json",
+        "escape": true,
+        "format": "{}"
+    }
+
+    // Refresh shape S instead: one line per run. Waybar runs it again only on
+    // SIGRTMIN+8, sent by whatever changed the state:
+    // pkill -RTMIN+8 -x waybar
+    // "custom/app-name": {
+    //     "exec": "app-name --waybar",
+    //     "return-type": "json",
+    //     "escape": true,
+    //     "format": "{}",
+    //     "interval": "once",
+    //     "signal": 8
+    // }
+}
