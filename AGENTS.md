@@ -20,7 +20,9 @@ There are two kinds of task. Work out which one you have before you do anything:
 2. Choose the pattern (SNI tray item, Waybar `custom` module, or both) with the
    decision table in `SPEC.md`. Write the choice and the reason into the first
    bullet of `PROGRESS.md`.
-3. Copy `templates/` to the repo root, rename the crate, and delete `templates/`.
+3. Copy `templates/` to the repo root, rename the crate (`app-name` in
+   `Cargo.toml`, `README.md` and `waybar/`), run `cargo update --workspace` so
+   `Cargo.lock` matches the new name, and delete `templates/`.
    Keep `SPEC.md`, `AGENTS.md` and `CLAUDE.md`. Replace `README.md` with the
    app's README, following the README template in `SPEC.md`.
 4. Implement the app. Read only the `SPEC.md` sections the task needs, not the
@@ -89,9 +91,12 @@ a polling version and plan to optimise it later.
 - Don't have Waybar spawn a process every second. Use a long-running `exec`
   that prints one line per change, or refresh by signal.
 - Use the release profile from `SPEC.md` unchanged.
-- Measure with tools that are already installed, and never install new ones:
+- Measure with tools that are already installed, and never install new ones.
+  The exact commands are in `SPEC.md`, "Footprint budget":
   - `VmRSS` in `/proc/PID/status` after startup settles
   - CPU over 60 s idle (difference of `utime`+`stime` in `/proc/PID/stat`)
+  - wakeups and runtime over the same 60 s (context switches and `schedstat`
+    per thread)
   - release binary size
   - `hyperfine` for any short-lived mode
 

@@ -48,7 +48,7 @@ Tie-breakers:
 
 ## 2. Stack
 
-Fixed by `AGENTS.md:47-59`. These are the exact versions:
+Fixed by `AGENTS.md:49-61`. These are the exact versions:
 
 | Crate | `Cargo.toml` line | When | Source |
 |---|---|---|---|
@@ -60,8 +60,8 @@ Fixed by `AGENTS.md:47-59`. These are the exact versions:
 | `serde`, `serde_json` | `serde = { version = "1", default-features = false, features = ["derive"] }`, `serde_json = { version = "1", default-features = false, features = ["std"] }` | `--waybar` JSON | `countdown_class/Cargo.toml:10-14` |
 | dev only: `tokio` | `features = ["io-util", "net"]` | private-bus tests | `powerprofilesctl-tray/Cargo.toml:16-17` |
 
-Any other crate is a new dependency: ask first (`AGENTS.md:33-34`). It needs
-`default-features = false` and a reason in the commit message (`AGENTS.md:58-59`).
+Any other crate is a new dependency: ask first (`AGENTS.md:35-36`). It needs
+`default-features = false` and a reason in the commit message (`AGENTS.md:60-61`).
 
 `Cargo.lock` is committed, and every check runs with `--locked`
 (`powerprofilesctl-tray/CLAUDE.md:12-17`). The template's lock pins
@@ -71,13 +71,13 @@ Where the apps disagree, this spec decides:
 
 | Topic | Apps | Chosen | Reason |
 |---|---|---|---|
-| Edition | 2024 (`powerprofilesctl-tray/Cargo.toml:4`, `yandex-tray-rs/Cargo.toml:4`), 2021 (`countdown_class/Cargo.toml:4`) | **2024** | Fixed by `AGENTS.md:54`; two of three apps already use it. |
-| MSRV | 1.90 (`powerprofilesctl-tray/Cargo.toml:5`, `countdown_class/Cargo.toml:5`), 1.89 (`yandex-tray-rs/Cargo.toml:5`) | **1.90** | Fixed by `AGENTS.md:54`. `File::try_lock` needs ≥ 1.89 (`yandex-tray-rs/AGENTS.md:64`). |
+| Edition | 2024 (`powerprofilesctl-tray/Cargo.toml:4`, `yandex-tray-rs/Cargo.toml:4`), 2021 (`countdown_class/Cargo.toml:4`) | **2024** | Fixed by `AGENTS.md:56`; two of three apps already use it. |
+| MSRV | 1.90 (`powerprofilesctl-tray/Cargo.toml:5`, `countdown_class/Cargo.toml:5`), 1.89 (`yandex-tray-rs/Cargo.toml:5`) | **1.90** | Fixed by `AGENTS.md:56`. `File::try_lock` needs ≥ 1.89 (`yandex-tray-rs/AGENTS.md:64`). |
 | `zbus` | 5.19 (`powerprofilesctl-tray/Cargo.toml:14`), 4.0 (`countdown_class/Cargo.toml:10`) | **5** | `ksni` already depends on zbus 5, so zbus 4 would build a second D-Bus stack (`ksni-0.3.7/Cargo.toml` `[dependencies.zbus]`). |
 | `ksni` | 0.3.7 (`powerprofilesctl-tray/Cargo.toml:10`), 0.3.6 (`yandex-tray-rs/Cargo.toml:9`) | **0.3.6** | *(measured)* 0.3.7 makes the template binary 57 KB bigger (1 727 512 vs 1 669 832 bytes) and over the §4 size budget. Its only addition, `current_xdg_activation_token` (`ksni-0.3.7/CHANGELOG.md:1-4`), isn't used by any app. |
-| `ksni` features | default (`yandex-tray-rs/Cargo.toml:9`) | `default-features = false, features = ["tokio"]` | Same feature set, written out as `AGENTS.md:58` requires. |
+| `ksni` features | default (`yandex-tray-rs/Cargo.toml:9`) | `default-features = false, features = ["tokio"]` | Same feature set, written out as `AGENTS.md:60` requires. |
 | Release profile | full (`yandex-tray-rs/Cargo.toml:13-18`), partial (`powerprofilesctl-tray/Cargo.toml:19-21`), none (`countdown_class/Cargo.toml`) | full, §3 | §3 |
-| Lints | full (`powerprofilesctl-tray/Cargo.toml:23-29`), pedantic only (`countdown_class/Cargo.toml:16-17`), none (`yandex-tray-rs/Cargo.toml`) | full, below | `AGENTS.md:56-57` |
+| Lints | full (`powerprofilesctl-tray/Cargo.toml:23-29`), pedantic only (`countdown_class/Cargo.toml:16-17`), none (`yandex-tray-rs/Cargo.toml`) | full, below | `AGENTS.md:58-59` |
 | Tray icon pixmap | PNG decoded at startup with the `png` crate (`powerprofilesctl-tray/src/tray.rs:202-222`), raw ARGB bytes (`yandex-tray-rs/src/tray.rs:102-104`) | **raw ARGB** | Dropping the PNG decoder took the yandex binary from 3.5 to 1.7 MB (`yandex-tray-rs` commit `7440316`). |
 
 Lints and clippy config, verbatim from `powerprofilesctl-tray/Cargo.toml:23-29`
@@ -106,7 +106,7 @@ only where the lint is wrong for that line
 
 ## 3. Release profile
 
-Use this unchanged (`AGENTS.md:91`). It is `yandex-tray-rs/Cargo.toml:13-18`:
+Use this unchanged (`AGENTS.md:93`). It is `yandex-tray-rs/Cargo.toml:13-18`:
 
 ```toml
 [profile.release]
@@ -136,7 +136,7 @@ closed pipe, so the panic aborts the process. Long-running output must use
 ## 4. Footprint budget
 
 A new app must match or beat the **best** column on every metric
-(`AGENTS.md:72-100`). Record its numbers in the README's "Footprint" section.
+(`AGENTS.md:74-105`). Record its numbers in the README's "Footprint" section.
 
 ### Baseline (step-1 measurements)
 
@@ -175,7 +175,7 @@ the app. Run it from the repo root as
 `sh target/footprint.sh NAME "$PWD/target/release/NAME" [args…]`. It starts the
 binary on a private session bus with absolute XDG dirs under
 `target/smoke/NAME`, waits 5 s, samples twice 60 s apart, and stops only the
-process it started (`AGENTS.md:102-115`).
+process it started (`AGENTS.md:107-120`).
 
 ```sh
 #!/bin/sh
@@ -222,7 +222,7 @@ before you run either command.
 
 ## 5. Event-driven rules
 
-Wait on an event and never poll on a fixed tick (`AGENTS.md:79-85`). Pick the
+Wait on an event and never poll on a fixed tick (`AGENTS.md:81-87`). Pick the
 source by the kind of data:
 
 | Data | Event source | Source |
@@ -247,7 +247,7 @@ Also:
 - A D-Bus service publishes only the properties that changed
   (`countdown_class/src/dbus_service.rs:118-130`).
 - If you must poll, add a one-line comment saying why no event exists
-  (`yandex-tray-rs/src/main.rs:108`, `AGENTS.md:80-82`).
+  (`yandex-tray-rs/src/main.rs:108`, `AGENTS.md:82-84`).
 
 ### Are the existing 1 s ticks justified?
 
@@ -310,7 +310,7 @@ After copying `templates/` and renaming the crate in `Cargo.toml`, run
 - **Arguments first.** Parse arguments in a plain `fn main()`, then build the
   runtime with `tokio::runtime::Builder::new_current_thread().enable_all()`.
   Short-lived modes return before the runtime exists (`countdown_class/src/app.rs:32-46`,
-  `AGENTS.md:86-88`). `#[tokio::main]` builds the runtime before parsing, so
+  `AGENTS.md:88-90`). `#[tokio::main]` builds the runtime before parsing, so
   don't use it (`powerprofilesctl-tray/src/main.rs:49`).
 - **Flags.** `-h`/`--help` prints usage and exits 0. `-v`/`--verbose` turns on
   `debug()`. Any other argument exits 2 (`powerprofilesctl-tray/src/main.rs:51-66`,
@@ -388,7 +388,7 @@ The module config keeps `"return-type": "json"` and `"escape": true`
 ### Refresh: pick one shape per app
 
 Never use `"interval": 1` or any fixed interval that spawns a process for an
-unchanged value (`AGENTS.md:89-90`, `countdown_class/example/waybar-module.json:6`).
+unchanged value (`AGENTS.md:91-92`, `countdown_class/example/waybar-module.json:6`).
 
 | Shape | Config | The process | Use when | Measured with |
 |---|---|---|---|---|
@@ -396,7 +396,7 @@ unchanged value (`AGENTS.md:89-90`, `countdown_class/example/waybar-module.json:
 | **S: signal** | `exec`, `"interval": "once"`, `"signal": N` | Prints one line and exits, as `countdown_class/src/waybar.rs:55` does. Whatever changes the state runs `pkill -RTMIN+N -x waybar`. | The value changes only on user actions or rare events, so a resident process would cost more RSS than an occasional spawn | `hyperfine` |
 
 Both shapes start no Tokio runtime and open no D-Bus connection unless the
-data source needs one (`AGENTS.md:86-88`, `countdown_class/src/app.rs:32-35`).
+data source needs one (`AGENTS.md:88-90`, `countdown_class/src/app.rs:32-35`).
 A time-driven shape L is a plain `std` loop with `std::thread::sleep`.
 
 Known limit, from neither app: `std` and Tokio sleeps use the monotonic clock,
@@ -483,7 +483,7 @@ patterns and both refresh shapes. Cut them down to the app's pattern.
 
 Never change real system state from a test: no real power profile, no real
 target app, no session or system bus writes (`powerprofilesctl-tray/CLAUDE.md:45`,
-`yandex-tray-rs/AGENTS.md:73-76`, `countdown_class/AGENTS.md:76-77`, `AGENTS.md:111-113`).
+`yandex-tray-rs/AGENTS.md:73-76`, `countdown_class/AGENTS.md:76-77`, `AGENTS.md:116-118`).
 
 **Unit tests**, in `#[cfg(test)] mod tests` next to the code:
 
@@ -524,7 +524,7 @@ code looks for, point the code at that copy, and retry the spawn on `ETXTBSY`
 - Assert on exit codes (`countdown_class/tests/cli.rs:161-173`), and check the
   published interface by introspection (`countdown_class/tests/cli.rs:270-341`).
 
-**Smoke test** (manual, before the last commit; `AGENTS.md:102-115`). Run it
+**Smoke test** (manual, before the last commit; `AGENTS.md:107-120`). Run it
 on a private bus with absolute XDG dirs under `target/smoke/`:
 
 - start the app
@@ -547,12 +547,12 @@ Afterwards, check that the state and cache dirs hold only what you expect
 | Custom-module icon | 16 px SVG used as a CSS `background-image`, copied next to `style.css` | `countdown_class/example/style.css:1-8`, `countdown_class/README.md:62-63` |
 | `assets/README.md` | A table of every file (purpose, size), the palette, and licences for anything not drawn from scratch (fonts, derived artwork) | `powerprofilesctl-tray/assets/README.md:9-50`, `countdown_class/assets/README.md:8-36` |
 
-Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:160`).
+Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:165`).
 
 ## 11. README template
 
 `templates/README.md` is the skeleton. The three READMEs share this order, and
-"Footprint" is required by `AGENTS.md:98`:
+"Footprint" is required by `AGENTS.md:103`:
 
 1. The icon line: `<img src="assets/icon.svg" width="64" height="64" alt="">`
    (`powerprofilesctl-tray/README.md:1`, `countdown_class/README.md:1-4`).
@@ -576,7 +576,7 @@ Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:160`).
 ## 12. Definition of done
 
 Copy this into `PROGRESS.md` and add one line per requested feature above it
-(`AGENTS.md:36-45`). Tick an item only after running the command that proves
+(`AGENTS.md:38-47`). Tick an item only after running the command that proves
 it.
 
 ```markdown
@@ -628,5 +628,5 @@ it.
 - systemd user units. Autostart belongs to the compositor config.
 - Bars other than Waybar (eww, polybar, yambar, ironbar).
 - GUI toolkits and other tray backends (GTK, `libappindicator`, Qt).
-- Other async runtimes or D-Bus crates (`AGENTS.md:49-52`).
+- Other async runtimes or D-Bus crates (`AGENTS.md:51-54`).
 - Notifications, settings windows, and i18n.
