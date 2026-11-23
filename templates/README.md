@@ -48,15 +48,17 @@ app-name [--verbose | -v]
 
 ## Footprint
 
-Measured with the commands in `SPEC.md`, "Footprint budget", on TODO (CPU, kernel).
+Measured with the commands in `SPEC.md`, "Footprint targets", on TODO (CPU, kernel).
 
-| Metric | Value | Budget |
+| Metric | Value | Target |
 |---|---|---|
 | Idle RSS (`VmRSS`) | TODO kB | ≤ 4264 kB |
 | CPU over 60 s idle (`utime`+`stime`) | TODO ticks | 0 ticks |
 | Runtime over 60 s idle (`schedstat`) | TODO ms | 0.00 ms |
 | Wakeups over 60 s idle | TODO | 0 |
 | Release binary | TODO bytes | ≤ 1 702 512 bytes |
+
+TODO: for any value over its target, one line saying why.
 
 ## Development
 

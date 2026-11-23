@@ -20,7 +20,7 @@ app. `ksni/…` points into the `ksni` crate source in `~/.cargo/registry`.
 1. Pattern decision table
 2. Stack
 3. Release profile
-4. Footprint budget
+4. Footprint targets
 5. Event-driven rules
 6. Project layout
 7. Runtime behaviour
@@ -74,7 +74,7 @@ Where the apps disagree, this spec decides:
 | Edition | 2024 (`powerprofilesctl-tray/Cargo.toml:4`, `yandex-tray-rs/Cargo.toml:4`), 2021 (`countdown_class/Cargo.toml:4`) | **2024** | Fixed by `AGENTS.md:56`; two of three apps already use it. |
 | MSRV | 1.90 (`powerprofilesctl-tray/Cargo.toml:5`, `countdown_class/Cargo.toml:5`), 1.89 (`yandex-tray-rs/Cargo.toml:5`) | **1.90** | Fixed by `AGENTS.md:56`. `File::try_lock` needs ≥ 1.89 (`yandex-tray-rs/AGENTS.md:64`). |
 | `zbus` | 5.19 (`powerprofilesctl-tray/Cargo.toml:14`), 4.0 (`countdown_class/Cargo.toml:10`) | **5** | `ksni` already depends on zbus 5, so zbus 4 would build a second D-Bus stack (`ksni-0.3.7/Cargo.toml` `[dependencies.zbus]`). |
-| `ksni` | 0.3.7 (`powerprofilesctl-tray/Cargo.toml:10`), 0.3.6 (`yandex-tray-rs/Cargo.toml:9`) | **0.3.6** | *(measured)* 0.3.7 makes the template binary 57 KB bigger (1 727 512 vs 1 669 832 bytes) and over the §4 size budget. Its only addition, `current_xdg_activation_token` (`ksni-0.3.7/CHANGELOG.md:1-4`), isn't used by any app. |
+| `ksni` | 0.3.7 (`powerprofilesctl-tray/Cargo.toml:10`), 0.3.6 (`yandex-tray-rs/Cargo.toml:9`) | **0.3.6** | *(measured)* 0.3.7 makes the template binary 57 KB bigger (1 727 512 vs 1 669 832 bytes) and over the §4 size target. Its only addition, `current_xdg_activation_token` (`ksni-0.3.7/CHANGELOG.md:1-4`), isn't used by any app. |
 | `ksni` features | default (`yandex-tray-rs/Cargo.toml:9`) | `default-features = false, features = ["tokio"]` | Same feature set, written out as `AGENTS.md:60` requires. |
 | Release profile | full (`yandex-tray-rs/Cargo.toml:13-18`), partial (`powerprofilesctl-tray/Cargo.toml:19-21`), none (`countdown_class/Cargo.toml`) | full, §3 | §3 |
 | Lints | full (`powerprofilesctl-tray/Cargo.toml:23-29`), pedantic only (`countdown_class/Cargo.toml:16-17`), none (`yandex-tray-rs/Cargo.toml`) | full, below | `AGENTS.md:58-59` |
@@ -133,10 +133,31 @@ both apps that set a profile.
 closed pipe, so the panic aborts the process. Long-running output must use
 `write!` and handle the error (§8).
 
-## 4. Footprint budget
+## 4. Footprint targets
 
-A new app must match or beat the **best** column on every metric
-(`AGENTS.md:74-105`). Record its numbers in the README's "Footprint" section.
+Record every number in the README's "Footprint" section (`AGENTS.md:74-107`).
+
+**Hard rules.** These pass or fail:
+
+- 0 CPU ticks and 0.00 ms runtime over 60 s idle. A time-driven display
+  records its runtime instead.
+- 0 wakeups over 60 s idle. A time-driven display is allowed at most one
+  wakeup per displayed change (see the notes below).
+- No polling without a one-line "no event source" comment (§5).
+
+**Targets.** The **best** column is the recommended target for idle RSS,
+release binary size and short-lived-mode time. Going over a target is allowed
+if the README's "Footprint" section gives the number, the target and a
+one-line reason. Try the obvious savings first, and ask the user only if the
+miss is over 10 % (`AGENTS.md:103-107`).
+
+Why these aren't hard limits: the targets come from the smallest reference
+app and leave no headroom for real app logic. clipboard-rs, built to this
+spec, came out 16 KB over the binary target (1 718 672 B) and 12–36 kB over
+the RSS target (4 276–4 300 kB). The bare template measured 4 264 kB in the
+same run. The overage came from its Wayland client, not from waste, and its
+idle wakeups and CPU were 0 (clipboard-rs footprint run, reported by the
+user).
 
 ### Baseline (step-1 measurements)
 
@@ -145,7 +166,7 @@ Linux 7.2.15-zen1, rustc 1.100.0. Each app was a release build of the commit
 in the table at the top, run under `dbus-run-session` with temporary XDG dirs
 and no SNI watcher on the private bus.
 
-| Metric | `powerprofilesctl-tray` | `yandex-tray-rs` | `countdown_class` (daemon) | **Best (budget)** |
+| Metric | `powerprofilesctl-tray` | `yandex-tray-rs` | `countdown_class` (daemon) | **Best (target)** |
 |---|---|---|---|---|
 | Idle RSS (`VmRSS`, 5 s after start) | 5 636 kB | 4 264 kB | 5 168 kB | **4 264 kB** |
 | CPU over 60 s idle (`utime`+`stime`) | 0 ticks | 0 ticks | 0 ticks | **0 ticks** |
@@ -161,9 +182,10 @@ Notes:
 - 1 tick is 10 ms, so the tick count can't show small loads. `schedstat`
   (nanoseconds) and context switches can, and they expose the 1 s ticks (§5).
 - The template in `templates/` measures 4 196 kB, 0 ticks, 0.00 ms, 0 wakeups
-  and 1 669 832 B, so it fits the budget with room for the app's logic.
+  and 1 669 832 B, so it meets every target. In a later run it measured
+  4 264 kB, level with the RSS target (clipboard-rs run).
 - A **time-driven display** (a countdown in seconds) can't be at 0 wakeups. Its
-  budget is **at most one wakeup per displayed change**. Measure it during a
+  hard limit is **at most one wakeup per displayed change**. Measure it during a
   60 s window and compare against the number of lines printed. The §8 shape-L
   snippet measured 60 wakeups in 60 s of per-second changes. The old 1 s tick
   measured 129.
@@ -175,7 +197,7 @@ the app. Run it from the repo root as
 `sh target/footprint.sh NAME "$PWD/target/release/NAME" [args…]`. It starts the
 binary on a private session bus with absolute XDG dirs under
 `target/smoke/NAME`, waits 5 s, samples twice 60 s apart, and stops only the
-process it started (`AGENTS.md:107-120`).
+process it started (`AGENTS.md:109-122`).
 
 ```sh
 #!/bin/sh
@@ -483,7 +505,7 @@ patterns and both refresh shapes. Cut them down to the app's pattern.
 
 Never change real system state from a test: no real power profile, no real
 target app, no session or system bus writes (`powerprofilesctl-tray/CLAUDE.md:45`,
-`yandex-tray-rs/AGENTS.md:73-76`, `countdown_class/AGENTS.md:76-77`, `AGENTS.md:116-118`).
+`yandex-tray-rs/AGENTS.md:73-76`, `countdown_class/AGENTS.md:76-77`, `AGENTS.md:118-120`).
 
 **Unit tests**, in `#[cfg(test)] mod tests` next to the code:
 
@@ -524,7 +546,7 @@ code looks for, point the code at that copy, and retry the spawn on `ETXTBSY`
 - Assert on exit codes (`countdown_class/tests/cli.rs:161-173`), and check the
   published interface by introspection (`countdown_class/tests/cli.rs:270-341`).
 
-**Smoke test** (manual, before the last commit; `AGENTS.md:107-120`). Run it
+**Smoke test** (manual, before the last commit; `AGENTS.md:109-122`). Run it
 on a private bus with absolute XDG dirs under `target/smoke/`:
 
 - start the app
@@ -547,7 +569,7 @@ Afterwards, check that the state and cache dirs hold only what you expect
 | Custom-module icon | 16 px SVG used as a CSS `background-image`, copied next to `style.css` | `countdown_class/example/style.css:1-8`, `countdown_class/README.md:62-63` |
 | `assets/README.md` | A table of every file (purpose, size), the palette, and licences for anything not drawn from scratch (fonts, derived artwork) | `powerprofilesctl-tray/assets/README.md:9-50`, `countdown_class/assets/README.md:8-36` |
 
-Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:165`).
+Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:167`).
 
 ## 11. README template
 
@@ -567,8 +589,8 @@ Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:165`).
 6. `## Configuration`, only if the app has config (`countdown_class/README.md:32`).
 7. `## D-Bus service`, only if the app serves one: name, path, a table of
    members (`countdown_class/README.md:66-82`).
-8. `## Footprint`: the §4 metrics, with the budget beside each, plus the
-   machine and the date.
+8. `## Footprint`: the §4 metrics, with the target beside each, a one-line
+   reason for any value over its target, and the machine and the date.
 9. `## Development`: the four checks (`powerprofilesctl-tray/README.md:63-70`).
 10. `## Artwork`, only if `assets/` holds more than `icon.svg`
     (`countdown_class/README.md:84`).
@@ -597,13 +619,15 @@ it.
 - [ ] cargo build --release --locked
 - [ ] No polling without a one-line "no event source" comment (SPEC.md §5)
 
-## Footprint (SPEC.md §4, all ≤ budget)
-- [ ] Idle RSS ≤ 4264 kB: ___
+## Footprint: hard rules (SPEC.md §4, pass/fail)
 - [ ] CPU over 60 s idle = 0 ticks: ___
 - [ ] Runtime over 60 s idle = 0.00 ms (time-driven: record it): ___
 - [ ] Wakeups over 60 s idle = 0 (time-driven: ≤ displayed changes): ___
-- [ ] Release binary ≤ 1 702 512 bytes: ___
-- [ ] Each short-lived mode ≤ 741 µs hyperfine mean (or n/a): ___
+
+## Footprint: targets (SPEC.md §4, over is allowed with a reason)
+- [ ] Idle RSS: ___ (target ≤ 4264 kB; if over, reason in README)
+- [ ] Release binary: ___ (target ≤ 1 702 512 bytes; if over, reason in README)
+- [ ] Each short-lived mode, hyperfine mean: ___ (target ≤ 741 µs; if over, reason in README; or n/a)
 
 ## Smoke test (SPEC.md §9, private bus, XDG under target/smoke/)
 - [ ] Starts and registers; menu actions do what the README says (fake services for writes)

@@ -4,8 +4,9 @@
 
 A spec and starter templates for small Rust apps that live in the Waybar tray:
 SNI tray items, Waybar `custom` modules, or both. They use `ksni`, `zbus` and
-`tokio` with a hard budget for idle CPU, memory, wakeups and binary size. The
-rules come from three working apps, and each rule cites the line it came from.
+`tokio`. Idle CPU and wakeups must be zero, and memory, binary size and
+startup time have targets. The rules come from three working apps, and each
+rule cites the line it came from.
 
 ## Usage
 
@@ -18,7 +19,7 @@ The agent follows [`AGENTS.md`](AGENTS.md), builds the app from
 
 ## Contents
 
-- [`SPEC.md`](SPEC.md): which pattern to pick, the stack, the footprint budget,
+- [`SPEC.md`](SPEC.md): which pattern to pick, the stack, the footprint targets,
   runtime behaviour, the Waybar contract, testing, assets, and the
   definition of done.
 - [`templates/`](templates/): `Cargo.toml`, `Cargo.lock`, `clippy.toml`, a

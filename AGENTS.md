@@ -71,7 +71,7 @@ cargo clippy --locked --all-targets --all-features -- -D warnings
 cargo build --release --locked
 ```
 
-## Resource footprint (hard requirement)
+## Resource footprint
 
 The apps run in the background all the time. Idle CPU, memory, wakeups and
 startup time must be as low as possible. When this conflicts with convenience
@@ -92,7 +92,7 @@ a polling version and plan to optimise it later.
   that prints one line per change, or refresh by signal.
 - Use the release profile from `SPEC.md` unchanged.
 - Measure with tools that are already installed, and never install new ones.
-  The exact commands are in `SPEC.md`, "Footprint budget":
+  The exact commands are in `SPEC.md`, "Footprint targets":
   - `VmRSS` in `/proc/PID/status` after startup settles
   - CPU over 60 s idle (difference of `utime`+`stime` in `/proc/PID/stat`)
   - wakeups and runtime over the same 60 s (context switches and `schedstat`
@@ -100,9 +100,11 @@ a polling version and plan to optimise it later.
   - release binary size
   - `hyperfine` for any short-lived mode
 
-  Record the numbers in the README's "Footprint" section. If any number is
-  above the budget in `SPEC.md`, the task isn't done. Fix it, or ask with the
-  numbers in hand.
+  Record the numbers in the README's "Footprint" section. Idle wakeups and
+  CPU are hard rules in `SPEC.md`. RSS, binary size and startup time are
+  targets: try the obvious savings first. If a target is still missed, record
+  the number and the reason, and mention it in the final report. Don't ask the
+  user unless the miss is over 10 %.
 
 ## Running and smoke-testing safely
 
