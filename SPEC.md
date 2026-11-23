@@ -74,7 +74,7 @@ Where the apps disagree, this spec decides:
 | Edition | 2024 (`powerprofilesctl-tray/Cargo.toml:4`, `yandex-tray-rs/Cargo.toml:4`), 2021 (`countdown_class/Cargo.toml:4`) | **2024** | Fixed by `AGENTS.md:56`; two of three apps already use it. |
 | MSRV | 1.90 (`powerprofilesctl-tray/Cargo.toml:5`, `countdown_class/Cargo.toml:5`), 1.89 (`yandex-tray-rs/Cargo.toml:5`) | **1.90** | Fixed by `AGENTS.md:56`. `File::try_lock` needs ≥ 1.89 (`yandex-tray-rs/AGENTS.md:64`). |
 | `zbus` | 5.19 (`powerprofilesctl-tray/Cargo.toml:14`), 4.0 (`countdown_class/Cargo.toml:10`) | **5** | `ksni` already depends on zbus 5, so zbus 4 would build a second D-Bus stack (`ksni-0.3.7/Cargo.toml` `[dependencies.zbus]`). |
-| `ksni` | 0.3.7 (`powerprofilesctl-tray/Cargo.toml:10`), 0.3.6 (`yandex-tray-rs/Cargo.toml:9`) | **0.3.6** | *(measured)* 0.3.7 makes the template binary 57 KB bigger (1 727 512 vs 1 669 832 bytes) and over the §4 size target. Its only addition, `current_xdg_activation_token` (`ksni-0.3.7/CHANGELOG.md:1-4`), isn't used by any app. |
+| `ksni` | 0.3.7 (`powerprofilesctl-tray/Cargo.toml:10`), 0.3.6 (`yandex-tray-rs/Cargo.toml:9`) | **0.3.6** | *(measured)* 0.3.7 makes the template binary 57 KB bigger (1 727 512 vs 1 669 832 bytes) for nothing in return. Its only addition, `current_xdg_activation_token` (`ksni-0.3.7/CHANGELOG.md:1-4`), isn't used by any app. |
 | `ksni` features | default (`yandex-tray-rs/Cargo.toml:9`) | `default-features = false, features = ["tokio"]` | Same feature set, written out as `AGENTS.md:60` requires. |
 | Release profile | full (`yandex-tray-rs/Cargo.toml:13-18`), partial (`powerprofilesctl-tray/Cargo.toml:19-21`), none (`countdown_class/Cargo.toml`) | full, §3 | §3 |
 | Lints | full (`powerprofilesctl-tray/Cargo.toml:23-29`), pedantic only (`countdown_class/Cargo.toml:16-17`), none (`yandex-tray-rs/Cargo.toml`) | full, below | `AGENTS.md:58-59` |
@@ -145,19 +145,24 @@ Record every number in the README's "Footprint" section (`AGENTS.md:74-107`).
   wakeup per displayed change (see the notes below).
 - No polling without a one-line "no event source" comment (§5).
 
-**Targets.** The **best** column is the recommended target for idle RSS,
-release binary size and short-lived-mode time. Going over a target is allowed
-if the README's "Footprint" section gives the number, the target and a
-one-line reason. Try the obvious savings first, and ask the user only if the
-miss is over 10 % (`AGENTS.md:103-107`).
+**Targets: recommendations only.** The **target** column gives idle RSS,
+release binary size and short-lived-mode time. Each target is twice the best
+reference app. They are not limits. Going over is fine, even by about 100 %,
+when the app does more than the reference apps or ships a large logo or
+icon set. Don't cut features or artwork to meet one. Write the number, the
+target and a one-line reason in the README's "Footprint" section, and move
+on. Ask the user only if a number is more than double its target
+(`AGENTS.md:103-107`).
 
-Why these aren't hard limits: the targets come from the smallest reference
-app and leave no headroom for real app logic. clipboard-rs, built to this
+Why the targets are this loose: the best column comes from the smallest
+reference app and leaves no headroom for real app logic. clipboard-rs, built to this
 spec, came out 16 KB over the binary target (1 718 672 B) and 12–36 kB over
 the RSS target (4 276–4 300 kB). The bare template measured 4 264 kB in the
 same run. The overage came from its Wayland client, not from waste, and its
 idle wakeups and CPU were 0 (clipboard-rs footprint run, reported by the
-user).
+user). Even after targets became soft, agents still worked to meet them on an
+app with more features and a large logo, so the user doubled them and said
+going about 100 % over is fine.
 
 ### Baseline (step-1 measurements)
 
@@ -166,14 +171,14 @@ Linux 7.2.15-zen1, rustc 1.100.0. Each app was a release build of the commit
 in the table at the top, run under `dbus-run-session` with temporary XDG dirs
 and no SNI watcher on the private bus.
 
-| Metric | `powerprofilesctl-tray` | `yandex-tray-rs` | `countdown_class` (daemon) | **Best (target)** |
-|---|---|---|---|---|
-| Idle RSS (`VmRSS`, 5 s after start) | 5 636 kB | 4 264 kB | 5 168 kB | **4 264 kB** |
-| CPU over 60 s idle (`utime`+`stime`) | 0 ticks | 0 ticks | 0 ticks | **0 ticks** |
-| Runtime over 60 s idle (`schedstat`) | 0.00 ms | 3.67 ms | 5.55 ms | **0.00 ms** |
-| Wakeups over 60 s idle (context switches) | 0 | 129 | 129 | **0** |
-| Release binary | 3 709 256 B | 1 702 512 B | 4 729 616 B | **1 702 512 B** |
-| Short-lived mode (`--waybar`, hyperfine mean) | — | — | 741 µs ± 160 µs (peak 3.4 MiB) | **741 µs** |
+| Metric | `powerprofilesctl-tray` | `yandex-tray-rs` | `countdown_class` (daemon) | Best | **Target** |
+|---|---|---|---|---|---|
+| Idle RSS (`VmRSS`, 5 s after start) | 5 636 kB | 4 264 kB | 5 168 kB | 4 264 kB | **8 528 kB** (recommendation) |
+| CPU over 60 s idle (`utime`+`stime`) | 0 ticks | 0 ticks | 0 ticks | 0 ticks | **0 ticks** (hard rule) |
+| Runtime over 60 s idle (`schedstat`) | 0.00 ms | 3.67 ms | 5.55 ms | 0.00 ms | **0.00 ms** (hard rule) |
+| Wakeups over 60 s idle (context switches) | 0 | 129 | 129 | 0 | **0** (hard rule) |
+| Release binary | 3 709 256 B | 1 702 512 B | 4 729 616 B | 1 702 512 B | **3 405 024 B** (recommendation) |
+| Short-lived mode (`--waybar`, hyperfine mean) | — | — | 741 µs ± 160 µs (peak 3.4 MiB) | 741 µs | **1 482 µs** (recommendation) |
 
 Notes:
 
@@ -182,8 +187,8 @@ Notes:
 - 1 tick is 10 ms, so the tick count can't show small loads. `schedstat`
   (nanoseconds) and context switches can, and they expose the 1 s ticks (§5).
 - The template in `templates/` measures 4 196 kB, 0 ticks, 0.00 ms, 0 wakeups
-  and 1 669 832 B, so it meets every target. In a later run it measured
-  4 264 kB, level with the RSS target (clipboard-rs run).
+  and 1 669 832 B. In a later run it measured 4 264 kB (clipboard-rs run).
+  That leaves about half of each recommended target for the app itself.
 - A **time-driven display** (a countdown in seconds) can't be at 0 wakeups. Its
   hard limit is **at most one wakeup per displayed change**. Measure it during a
   60 s window and compare against the number of lines printed. The §8 shape-L
@@ -590,7 +595,8 @@ Use the `logo-design` skill for new icons if it is installed (`AGENTS.md:167`).
 7. `## D-Bus service`, only if the app serves one: name, path, a table of
    members (`countdown_class/README.md:66-82`).
 8. `## Footprint`: the §4 metrics, with the target beside each, a one-line
-   reason for any value over its target, and the machine and the date.
+   reason for any value over its target (over is fine), and the machine and
+   the date.
 9. `## Development`: the four checks (`powerprofilesctl-tray/README.md:63-70`).
 10. `## Artwork`, only if `assets/` holds more than `icon.svg`
     (`countdown_class/README.md:84`).
@@ -624,10 +630,10 @@ it.
 - [ ] Runtime over 60 s idle = 0.00 ms (time-driven: record it): ___
 - [ ] Wakeups over 60 s idle = 0 (time-driven: ≤ displayed changes): ___
 
-## Footprint: targets (SPEC.md §4, over is allowed with a reason)
-- [ ] Idle RSS: ___ (target ≤ 4264 kB; if over, reason in README)
-- [ ] Release binary: ___ (target ≤ 1 702 512 bytes; if over, reason in README)
-- [ ] Each short-lived mode, hyperfine mean: ___ (target ≤ 741 µs; if over, reason in README; or n/a)
+## Footprint: recommendations (SPEC.md §4; over is fine, even ~100 %, with a reason)
+- [ ] Idle RSS: ___ (target ≤ 8528 kB; if over, reason in README)
+- [ ] Release binary: ___ (target ≤ 3 405 024 bytes; if over, reason in README)
+- [ ] Each short-lived mode, hyperfine mean: ___ (target ≤ 1 482 µs; if over, reason in README; or n/a)
 
 ## Smoke test (SPEC.md §9, private bus, XDG under target/smoke/)
 - [ ] Starts and registers; menu actions do what the README says (fake services for writes)

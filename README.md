@@ -4,8 +4,8 @@
 
 A spec and starter templates for small Rust apps that live in the Waybar tray:
 SNI tray items, Waybar `custom` modules, or both. They use `ksni`, `zbus` and
-`tokio`. Idle CPU and wakeups must be zero, and memory, binary size and
-startup time have targets. The rules come from three working apps, and each
+`tokio`. Idle CPU and wakeups must be zero. Memory, binary size and startup
+time have recommended targets. The rules come from three working apps, and each
 rule cites the line it came from.
 
 ## Usage

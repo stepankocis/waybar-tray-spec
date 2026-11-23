@@ -101,10 +101,10 @@ a polling version and plan to optimise it later.
   - `hyperfine` for any short-lived mode
 
   Record the numbers in the README's "Footprint" section. Idle wakeups and
-  CPU are hard rules in `SPEC.md`. RSS, binary size and startup time are
-  targets: try the obvious savings first. If a target is still missed, record
-  the number and the reason, and mention it in the final report. Don't ask the
-  user unless the miss is over 10 %.
+  CPU are hard rules. RSS, binary size and startup time are recommendations
+  only: going over, even by about 100 %, is fine. Write the number and a
+  one-line reason in the README and the final report, and move on. Ask the
+  user only if a number is more than double its target.
 
 ## Running and smoke-testing safely
 

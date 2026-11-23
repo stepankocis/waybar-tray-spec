@@ -52,13 +52,14 @@ Measured with the commands in `SPEC.md`, "Footprint targets", on TODO (CPU, kern
 
 | Metric | Value | Target |
 |---|---|---|
-| Idle RSS (`VmRSS`) | TODO kB | ≤ 4264 kB |
+| Idle RSS (`VmRSS`) | TODO kB | ≤ 8528 kB |
 | CPU over 60 s idle (`utime`+`stime`) | TODO ticks | 0 ticks |
 | Runtime over 60 s idle (`schedstat`) | TODO ms | 0.00 ms |
 | Wakeups over 60 s idle | TODO | 0 |
-| Release binary | TODO bytes | ≤ 1 702 512 bytes |
+| Release binary | TODO bytes | ≤ 3 405 024 bytes |
 
-TODO: for any value over its target, one line saying why.
+RSS and binary targets are recommendations (SPEC.md §4). TODO: for any value
+over its target, one line saying why, or delete this paragraph.
 
 ## Development
 
